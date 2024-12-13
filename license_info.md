@@ -1,9 +1,7 @@
 License Info
 ------------
 
-Most projects we open source should use the [Apache License v2](https://opensource.org/license/apache-2-0/) license.  Samples, demos, and blog / doc code examples should instead use [CC-0](https://creativecommons.org/publicdomain/zero/1.0/).  If you strongly feel your project should perhaps use a different license clause, please engage with legal team.
-
-For the ALv2 license, create a `LICENSE.txt` file (or use the one in this template repo) in the root of your repo containing:
+Note: Could change to https://creativecommons.org/publicdomain/zero/1.0/?
 ```
 Apache License Version 2.0
 
