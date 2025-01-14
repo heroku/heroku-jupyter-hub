@@ -1,1 +1,1 @@
-python3 bootstrap.py
+sudo python3 bootstrap.py
