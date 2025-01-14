@@ -1,1 +1,1 @@
-web: python3 /app/heroku-jupyterhub/bootstrap/bootstrap.py
+web: python3 /app/the-littlest-jupyterhub/bootstrap/bootstrap.py
