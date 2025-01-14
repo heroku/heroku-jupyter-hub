@@ -449,6 +449,7 @@ def main():
         #
         apt_get_adjusted_env = os.environ.copy()
         apt_get_adjusted_env["DEBIAN_FRONTEND"] = "noninteractive"
+        """
         run_subprocess(["apt-get", "update"])
         run_subprocess(
             ["apt-get", "install", "--yes", "software-properties-common"],
@@ -471,7 +472,7 @@ def main():
             ],
             env=apt_get_adjusted_env,
         )
-
+        """
         logger.info("Setting up virtual environment at {}".format(hub_env_prefix))
         os.makedirs(hub_env_prefix, exist_ok=True)
         run_subprocess(["python3", "-m", "venv", hub_env_prefix])
