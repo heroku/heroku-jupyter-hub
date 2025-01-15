@@ -1,1 +1,1 @@
-sudo -E python3 bootstrap.py --admin admin
+python3 bootstrap.py --admin admin
