@@ -1,0 +1,61 @@
+#!/usr/bin/env sh 
+
+echo "Adding proxy port to shared database..."
+node connect_db.js
+echo "Database updated"
+
+# usage: file_env VAR [DEFAULT]
+#    ie: file_env 'XYZ_DB_PASSWORD' 'example'
+# (will allow for "$XYZ_DB_PASSWORD_FILE" to fill in the value of
+#  "$XYZ_DB_PASSWORD" from a file, especially for Docker's secrets feature)
+#file_env() {
+#    var=$1
+#    file_var="${var}_FILE"
+#    var_value=$(printenv $var || true)
+#    file_var_value=$(printenv $file_var || true)
+#    default_value=$2
+#
+#    if [ -n "$var_value" -a -n "$file_var_value" ]; then
+#        echo >&2 "error: both $var and $file_var are set (but are exclusive)"
+#        exit 1
+#    fi
+#
+#    if [ -z "${var_value}" ]; then
+#        if [ -z "${file_var_value}" ]; then
+#            export "${var}"="${default_value}"
+#        else
+#            export "${var}"="$(cat $file_var_value)"
+#        fi
+#    fi
+#
+#    unset "$file_var"
+#}
+
+#file_env 'CONFIGPROXY_AUTH_TOKEN'
+
+#case "$@" in
+#    *"--api-ip"*)
+#        break ;;
+#    *)
+        # Default api-ip to all interfaces in docker,
+        # so that it is accessible to other containers
+        # and when port-forwarding is requested.
+        #ARGS="--api-ip=0.0.0.0" ;;
+        #ARGS="--ip=${PROXY_WEB_URL#https://%/} --port=$PORT --api-ip=${PROXY_WEB_URL#https://%/} --api-port=$PORT --default-target=${HUB_WEB_URL}:${HUB_PORT} --error-target=${HUB_WEB_URL}:${HUB_PORT}/hub/error --log-level=debug";;
+#        ARGS="--ip=localhost --port=$PORT --api-ip=${PROXY_WEB_URL#https://%/} --api-port=$PORT --default-target=${HUB_WEB_URL}:${HUB_PORT} --error-target=${HUB_WEB_URL}:${HUB_PORT}/hub/error --log-level=debug";;
+#esac
+
+#ARGS="--ip=localhost --port=$PORT --api-ip=${PROXY_WEB_URL#https://%/} --api-port=$PORT --default-target=${HUB_WEB_URL}:${HUB_PORT} --error-target=${HUB_WEB_URL}:${HUB_PORT}/hub/error --log-level=debug"
+
+# Remove 'https://'' from urls
+CLEAN_PROXY_URL="${PROXY_WEB_URL#https://}"
+CLEAN_HUB_URL="${HUB_WEB_URL#https://}"
+
+# Remove trailing '/' from urls
+CLEAN_PROXY_URL="${CLEAN_PROXY_URL%/}"
+CLEAN_HUB_URL="${CLEAN_HUB_URL%/}"
+
+echo "PROXY WEB URL CLEAN: $CLEAN_PROXY_URL"
+echo "Starting proxy server..."
+#exec configurable-http-proxy $ARGS "$@"
+exec configurable-http-proxy --ip=0.0.0.0 --port=$PORT --api-ip=0.0.0.0 --api-port=$PORT --default-target=${CLEAN_HUB_URL}:${HUB_PORT} --error-target=${CLEAN_HUB_URL}:${HUB_PORT}/hub/error --log-level=debug

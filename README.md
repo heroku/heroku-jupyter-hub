@@ -1,13 +1,35 @@
-# README
+# heroku-jupyterhub
 
-⚠️ **THIS REPOSITORY IS A WORK IN PROGRESS AND NOT READY FOR USE** ⚠️
 
-This repository aims to provide a streamlined way to deploy Jupyter Hub on Heroku. However, **it is still under active development** and **should not be used in its current state**.
 
-We are actively working on finalizing the features and functionality. Please check back later for updates or consider contributing to the development effort.
+## Quick start - Installation instructions
 
----
+The fastest & easiest way to get started is to choose option 1 below: automatic deployment on Heroku.
 
-## Usage
+### 1. Heroku - Automatic Deployment (faster & easier)
 
-🚧 **This section will be updated once the repository is ready for use.** 🚧
+First, click on this handy dandy button:
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
+
+
+
+### 2. Heroku - Manual Deployment (does the same thing as 1, but nice for learning / understanding)
+
+Push this repository to your app or fork this repository on github and link your
+repository to your heroku app.
+
+To create a new app, run:
+```
+
+```
+
+## Environment / Config variables
+
+
+
+## Python version
+
+If you want to use a different Python version, you should set it in the `.python-version` file, for example:
+```
+3.11
+```

@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+# heroku will override $PS1 when specified as a config var, so we'll set it here to make the jupyter
+# terminal interface a little prettier:
+export PS1='\[\033[01;34m\]\w\[\033[00m\]\$'
+
+echo "Archiving proxy server files for proxy build blob..."
+export PROXY_BLOB='proxy_server/proxy_server_app.tar.gz'
+tar -czf $PROXY_BLOB proxy_server/*
+echo "Blob created"
+
+echo "Creating app for proxy server..."
+python3 create_proxy.py
+echo "Proxy server app created"
+
+echo "Connecting to database"
+python3 connect_db.py
+if [ $? -ne 0 ]; then
+    echo "PROXY_PORT value not found."
+else 
+    read PROXY_PORT < proxy_port.txt
+    export PROXY_PORT=$(cat proxy_port.txt)
+    echo "PROXY_PORT = $PROXY_PORT"
+fi
+
+echo "Sleeping to give proxy app time to start up"
+sleep 10
+
+echo " Proxy web url: $PROXY_WEB_URL"
+echo "Starting Jupyterhub..."
+exec jupyterhub --ConfigurableHTTPProxy.api_url="${PROXY_WEB_URL}:${PROXY_PORT}" --debug
+#exec jupyterhub
