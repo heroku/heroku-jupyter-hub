@@ -82,18 +82,6 @@ if __name__ == "__main__":
     # Create build for proxy server app
     print("Attempting to create proxy server build...")
     proxy_build = create_build(app_name=PROXY_APP_NAME, source_blob={"source_blob": {"url": blob_get_url}})
-    
-    # Make myself collaborator on app
-    # TODO remove this when done with development
-    if proxy_info["owner"]["email"] != "awurtz@salesforce.com":
-        response = requests.post(url=f"{heroku_url}/{PROXY_APP_NAME}/collaborators", headers=headers, json={"user": "awurtz@salesforce.com"})
-        print("Add collaborator response: ")
-        print(response.json())
-        # Transfer proxy app to me
-        # TODO remove this when done with development
-        response = requests.post(url="https://api.heroku.com/account/app-transfers", headers=headers, json={"app": "jupyterhub-proxy-server", "recipient": "awurtz@salesforce.com", "silent": False})
-        print("App transfer response:") 
-        print(response.json())
     print("Proxy server is running...") 
 
 
