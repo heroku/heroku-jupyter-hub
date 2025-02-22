@@ -34,6 +34,7 @@ if __name__ == "__main__":
         print(f"{item}: {hub_info[item]}")
 
     print("\n\nGetting proxy app info...")
+    # TODO check if app exists. If it exists, check if user owns app. 
     proxy_info = create_heroku_app(app_name=PROXY_APP_NAME)
 
     # proxy_info = get_app_info(app_name=PROXY_APP_NAME)
