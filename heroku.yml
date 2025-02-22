@@ -5,14 +5,10 @@ setup:
   config:
     # This username will be a JupyterHub admin
     JUPYTERHUB_ADMIN: admin
-    # All containers will join this network
-    DOCKER_NETWORK_NAME: jupyterhub-network
     # JupyterHub will spawn this Notebook image for users
     DOCKER_NOTEBOOK_IMAGE: quay.io/jupyter/base-notebook:latest
     # Notebook directory inside user image
     DOCKER_NOTEBOOK_DIR: /home/jovyan/work
-    # Proxy API URL (needs to be generated when proxy app is created)
-    #PROXY_API_URL: ""
 
 build:
   docker:
@@ -20,5 +16,3 @@ build:
 
 run:
   web: ./start_hub 
-  # web: jupyterhub -f /srv/jupyterhub/jupyterhub_config.py --port=$PORT
-  # worker: python3 start_proxy.py
