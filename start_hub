@@ -24,7 +24,7 @@ else
 fi
 
 echo "Sleeping to give proxy app time to start up"
-sleep 10
+sleep 3 
 
 echo " Proxy web url: $PROXY_WEB_URL"
 echo "Starting Jupyterhub..."
