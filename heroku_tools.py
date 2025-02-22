@@ -4,6 +4,7 @@ import requests
 
 # Heroku API key -- set as configuration variable by the user
 HEROKU_AUTH_TOKEN = os.getenv("HEROKU_AUTH_TOKEN")
+PROXY_APP_NAME = os.getenv("PROXY_NAME")
 
 # Base URL of Heroku Platform API endpoints
 heroku_url = "https://api.heroku.com/apps"
@@ -38,7 +39,7 @@ def create_heroku_app(app_name=None, region="us"):
     if response.status_code == 201:
         print("App created successfully!")
         return response.json()  # Returns details of the new app
-    elif response.status_code == 422 and response.json()["message"] == "Name jupyterhub-proxy-server is already taken":
+    elif response.status_code == 422 and response.json()["message"] == f"Name {PROXY_APP_NAME} is already taken":
         print("This app aready exists.")
         print("Getting app info...")
         return get_app_info(app_name=app_name)
