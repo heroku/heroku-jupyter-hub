@@ -1,5 +1,6 @@
 # Copyright (c) Jupyter Development Team.
 # Distributed under the terms of the Modified BSD License.
+# These args may not be necessary
 ARG JUPYTERHUB_ADMIN
 ARG DOCKER_NETWORK_NAME
 ARG DOCKER_NOTEBOOK_IMAGE
@@ -24,7 +25,6 @@ RUN apt install -y git
 # Install dockerspawner, nativeauthenticator
 RUN python3 -m pip install --no-cache-dir --upgrade pip
 RUN python3 -m pip install --no-cache-dir dockerspawner jupyterhub-nativeauthenticator psycopg2-binary
-# RUN python3 -m pip install --no-cache-dir sudospawner jupyterhub-nativeauthenticator
 
 # TODO: update CMD to reflect heroku.yml file
 CMD ["sh", "-c", "jupyterhub", "-f", "/srv/jupyterhub/jupyterhub_config.py", "--port=${PORT}"]
