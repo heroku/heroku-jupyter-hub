@@ -12,8 +12,13 @@ RUN apk upgrade --no-cache && \
     jq \
     nginx
 
-# Install specific version of configurable-http-proxy
+# Set up configurable-http-proxy
+RUN mkdir -p /srv/configurable-http-proxy
+COPY . /srv/configurable-http-proxy/
+WORKDIR /srv/configurable-http-proxy
+
 RUN npm install -g configurable-http-proxy@4.5.1
+
 
 # Copy our files
 COPY start_proxy /
@@ -24,6 +29,9 @@ RUN chmod +x /start_proxy
 
 # Switch to non-root user
 USER 65534
+
+# Put configurable-http-proxy on path
+ENV PATH=/srv/configurable-http-proxy/bin:$PATH
 
 # Start command with debug output
 ENTRYPOINT ["sh", "-x", "/start_proxy"]
