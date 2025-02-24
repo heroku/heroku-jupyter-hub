@@ -4,6 +4,10 @@
 # terminal interface a little prettier:
 export PS1='\[\033[01;34m\]\w\[\033[00m\]\$'
 
+echo "Archiving proxy server files for proxy build blob..."
+export PROXY_BLOB='proxy_server/proxy_server_app.tar.gz'
+tar -czf $PROXY_BLOB proxy_server/*
+echo "Blob created"
 
 echo "Creating app for proxy server..."
 python3 create_proxy.py
