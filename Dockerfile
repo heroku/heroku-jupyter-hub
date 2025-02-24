@@ -10,10 +10,12 @@ FROM python:3.10-slim
 
 # Install Node.js for configurable-http-proxy
 RUN apt-get update && \
-    apt-get install -y nodejs npm && \
-    npm install -g configurable-http-proxy && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+    apt-get install -y \
+    nodejs \
+    npm \
+    && npm install -g configurable-http-proxy \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 # Install Python packages
 COPY requirements.txt .
