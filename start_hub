@@ -35,4 +35,3 @@ fi
 
 echo "Starting Jupyterhub..."
 exec jupyterhub --debug
-#exec jupyterhub

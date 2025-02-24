@@ -6,25 +6,33 @@ ARG DOCKER_NETWORK_NAME
 ARG DOCKER_NOTEBOOK_IMAGE
 ARG DOCKER_NOTEBOOK_DIR
 
-FROM quay.io/jupyterhub/jupyterhub
+FROM python:3.10-slim
 
-COPY start_hub jupyterhub_config.py create_proxy.py heroku_tools.py connect_db.py /srv/jupyterhub/
-COPY proxy_server/ /srv/jupyterhub/proxy_server
+# Install Node.js for configurable-http-proxy
+RUN apt-get update && \
+    apt-get install -y nodejs npm && \
+    npm install -g configurable-http-proxy && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
-# Create non-root user
-# RUN useradd -m myuser
-# USER myuser
+# Install Python packages
+COPY requirements.txt .
+RUN pip install -r requirements.txt
 
-# Add non-root user's directories to PATH
-# ENV PATH="$PATH:/home/myuser/.local/bin:/home/myuser/.local/lib/python3.10"
+# Copy application files
+WORKDIR /srv/jupyterhub
+COPY . .
 
-# Install git
-RUN apt update
-RUN apt install -y git
+# Make start script executable
+RUN chmod +x start_hub
 
-# Install dockerspawner, nativeauthenticator
-RUN python3 -m pip install --no-cache-dir --upgrade pip
-RUN python3 -m pip install --no-cache-dir dockerspawner jupyterhub-nativeauthenticator psycopg2-binary
+# Use non-root user
+RUN useradd -m -d /home/jovyan jovyan
+RUN chown -R jovyan:jovyan /srv/jupyterhub
+USER jovyan
 
-# TODO: update CMD to reflect heroku.yml file
-CMD ["sh", "-c", "jupyterhub", "-f", "/srv/jupyterhub/jupyterhub_config.py", "--port=${PORT}"]
+# Expose the port
+EXPOSE $PORT
+
+# Start the hub
+CMD ["./start_hub"]

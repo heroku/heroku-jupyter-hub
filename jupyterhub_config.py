@@ -46,7 +46,7 @@ c.DockerSpawner.debug = True
 #c.JupyterHub.hub_port = 8080
 #c.JupyterHub.bind_url = f"{os.environ.get('WEB_URL')}:{os.environ.get('PORT')}"
 c.JupyterHub.bind_url = f"http://0.0.0.0:{os.environ.get('PORT')}"
-c.JupyterHub.hub_ip = '0.0.0.0'  # Listen on all interfaces
+c.JupyterHub.hub_ip = '0.0.0.0'
 c.JupyterHub.hub_port = int(os.environ.get('PORT'))
 c.JupyterHub.hub_connect_ip = '0.0.0.0'
 
@@ -73,11 +73,12 @@ if admin:
 #c.ConfigurableHTTPProxy.api_url = f'http://localhost:{int(os.environ.get("PORT"))}'
 #c.ConfigurableHTTPProxy.auth_token = os.environ.get("CONFIGPROXY_AUTH_TOKEN")
 
-# Config to run proxy seperately from the hub
+# Proxy configuration
 c.JupyterHub.cleanup_servers = False
-c.ConfigurableHTTPProxy.should_start = False
-c.ConfigurableHTTPProxy.api_url = os.environ.get('PROXY_WEB_URL').rstrip('/')
+c.ConfigurableHTTPProxy.should_start = False  # Don't start the proxy
+c.ConfigurableHTTPProxy.api_url = f"{os.environ.get('PROXY_WEB_URL').rstrip('/')}/api"
 c.ConfigurableHTTPProxy.auth_token = os.environ.get('CONFIGPROXY_AUTH_TOKEN')
+c.ConfigurableHTTPProxy.public_url = os.environ.get('PROXY_WEB_URL').rstrip('/')
 
 # Ensure these environment variables are required
 required_env_vars = ['PORT', 'PROXY_WEB_URL', 'CONFIGPROXY_AUTH_TOKEN']
