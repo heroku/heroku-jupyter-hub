@@ -22,22 +22,10 @@ if __name__ == "__main__":
         db_connection = connect_with_retry()
         cursor = db_connection.cursor()
 
-        # Query the 'app_config' table
-        query = "SELECT value FROM app_config WHERE key = %s;"
-        cursor.execute(query, ('PROXY_PORT',))
-        result = cursor.fetchone()
-
-        if result:
-            proxy_port = result[0]
-            print(f"PROXY_PORT: {proxy_port}")
-
-            with open("proxy_port.txt", "w") as file:
-                file.write(proxy_port)
-            print("Proxy port value successfully written to file.")
-            exit(0)
-        else:
-            print("PROXY_PORT not found in app_config table.")
-            exit(1)
+        # Just verify we can connect to the database
+        cursor.execute("SELECT 1")
+        print("Database connection successful")
+        exit(0)
 
     except Exception as e:
         print(f"Error: {str(e)}")

@@ -79,6 +79,10 @@ c.ConfigurableHTTPProxy.should_start = False  # Don't start the proxy since it's
 c.ConfigurableHTTPProxy.api_url = f"{os.environ.get('PROXY_WEB_URL').rstrip('/')}/api"  # Clean URL, path-based routing
 c.ConfigurableHTTPProxy.auth_token = os.environ.get('CONFIGPROXY_AUTH_TOKEN')
 
+# Don't try to use any proxy port
+c.ConfigurableHTTPProxy.api_port = None
+c.ConfigurableHTTPProxy.public_port = None
+
 # Ensure these environment variables are required
 required_env_vars = ['PORT', 'PROXY_WEB_URL', 'CONFIGPROXY_AUTH_TOKEN']
 missing_vars = [var for var in required_env_vars if not os.environ.get(var)]

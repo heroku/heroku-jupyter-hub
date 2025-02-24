@@ -13,16 +13,6 @@ echo "Creating app for proxy server..."
 python3 create_proxy.py
 echo "Proxy server app created"
 
-echo "Connecting to database"
-python3 connect_db.py
-if [ $? -ne 0 ]; then
-    echo "PROXY_PORT value not found."
-    exit 1
-else
-    export PROXY_PORT=$(cat proxy_port.txt)
-    echo "PROXY_PORT = $PROXY_PORT"
-fi
-
 echo "Waiting for proxy app to be ready..."
 # More robust wait mechanism with timeout
 max_attempts=30
@@ -44,5 +34,5 @@ if [ -z "$PROXY_WEB_URL" ]; then
 fi
 
 echo "Starting Jupyterhub..."
-exec jupyterhub --ConfigurableHTTPProxy.api_url="${PROXY_WEB_URL}:${PROXY_PORT}" --debug
+exec jupyterhub --debug
 #exec jupyterhub
