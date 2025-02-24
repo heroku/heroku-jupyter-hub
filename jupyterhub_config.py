@@ -77,10 +77,15 @@ if admin:
 c.JupyterHub.cleanup_servers = False
 c.ConfigurableHTTPProxy.should_start = False  # Don't start the proxy
 
-# Clean up the proxy URL to avoid double slashes
-proxy_url = os.environ.get('PROXY_WEB_URL', '').rstrip('/')
-c.ConfigurableHTTPProxy.api_url = f"{proxy_url}/api"
+# Clean up the proxy URL and ensure no double /api
+proxy_base_url = os.environ.get('PROXY_WEB_URL', '').rstrip('/')
+if proxy_base_url.endswith('/api'):
+    proxy_base_url = proxy_base_url[:-4]
+c.ConfigurableHTTPProxy.api_url = f"{proxy_base_url}/api"
 c.ConfigurableHTTPProxy.auth_token = os.environ.get('CONFIGPROXY_AUTH_TOKEN')
+
+# Debug logging for proxy communication
+c.ConfigurableHTTPProxy.debug = True
 
 # Ensure these environment variables are required
 required_env_vars = ['PORT', 'PROXY_WEB_URL', 'CONFIGPROXY_AUTH_TOKEN']
