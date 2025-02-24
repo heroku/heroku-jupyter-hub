@@ -4,8 +4,6 @@
 # terminal interface a little prettier:
 export PS1='\[\033[01;34m\]\w\[\033[00m\]\$'
 
-# is this needed?
-COPY start_hub jupyterhub_config.py create_proxy.py heroku_tools.py connect_db.py /srv/jupyterhub/
 
 echo "Creating app for proxy server..."
 python3 create_proxy.py

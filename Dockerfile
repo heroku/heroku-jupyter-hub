@@ -7,6 +7,7 @@ FROM quay.io/jupyterhub/jupyterhub
 COPY start_hub jupyterhub_config.py create_proxy.py heroku_tools.py /srv/jupyterhub/
 COPY proxy_server/ /srv/jupyterhub/proxy_server
 
+
 # Install git and other dependencies
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
