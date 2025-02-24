@@ -31,6 +31,7 @@ def get_app_info(app_name):
 
 # Create a new Heroku app
 def create_heroku_app(app_name=None, region="us"):
+    # TODO: detect if 1) app already exists and user owns it VS 2) app name already taken (possibly by other user)
     response = requests.post(heroku_url, headers=headers, json={
         "name": app_name,
         "region": region,
