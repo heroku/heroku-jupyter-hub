@@ -22,6 +22,10 @@ RUN npm install -g configurable-http-proxy
 # Copy nginx configuration
 COPY nginx.conf /etc/nginx/nginx.conf
 
+# Make start script executable
+COPY start_proxy /
+RUN chmod +x start_proxy
+
 # Switch to non-root user
 USER 65534
 
@@ -29,4 +33,4 @@ USER 65534
 ENV PATH=/srv/configurable-http-proxy/bin:$PATH
 
 # Start command
-ENTRYPOINT ["/srv/configurable-http-proxy/start_proxy"]
+ENTRYPOINT ["./start_proxy"]
