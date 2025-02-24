@@ -1,0 +1,17 @@
+#!/usr/bin/env sh 
+
+echo "Adding proxy port to shared database..."
+node connect_db.js
+echo "Database updated"
+
+# Remove 'https://'' from urls
+CLEAN_PROXY_URL="${PROXY_WEB_URL#https://}"
+CLEAN_HUB_URL="${HUB_WEB_URL#https://}"
+
+# Remove trailing '/' from urls
+CLEAN_PROXY_URL="${CLEAN_PROXY_URL%/}"
+CLEAN_HUB_URL="${CLEAN_HUB_URL%/}"
+
+echo "PROXY WEB URL CLEAN: $CLEAN_PROXY_URL"
+echo "Starting proxy server..."
+exec configurable-http-proxy --ip=0.0.0.0 --port=$PORT --api-ip=0.0.0.0 --api-port=$PORT --default-target=${CLEAN_HUB_URL}:${HUB_PORT} --error-target=${CLEAN_HUB_URL}:${HUB_PORT}/hub/error --log-level=debug

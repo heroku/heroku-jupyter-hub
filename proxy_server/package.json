@@ -1,0 +1,46 @@
+{
+    "version": "4.6.4-dev.0",
+    "name": "configurable-http-proxy",
+    "description": "A configurable-on-the-fly HTTP Proxy",
+    "author": "Jupyter Developers",
+    "license": "BSD-3-Clause",
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/jupyterhub/configurable-http-proxy.git"
+    },
+    "dependencies": {
+      "commander": "~7.2",
+      "http-proxy-node16": "1.0.5",
+      "prom-client": "14.2.0",
+      "strftime": "~0.10.0",
+      "winston": "~3.15.0"
+    },
+    "devDependencies": {
+      "jasmine": "^3.5.0",
+      "jshint": "^2.10.2",
+      "node-fetch": "^2.7.0",
+      "nyc": "^15.0.0",
+      "ws": "^8.4.0"
+    },
+    "engines": {
+      "node": ">= 10.0"
+    },
+    "engineStrict": true,
+    "main": "index.js",
+    "files": [
+      "index.js",
+      "lib/*.js",
+      "lib/error/*.html",
+      "bin/configurable-http-proxy"
+    ],
+    "bin": {
+      "configurable-http-proxy": "bin/configurable-http-proxy"
+    },
+    "scripts": {
+      "lint": "jshint bin/ lib/ test/",
+      "fmt": "pre-commit run --all-files",
+      "test": "NODE_TLS_REJECT_UNAUTHORIZED=0 FORCE_COLOR=3 nyc node test/jasmine.js",
+      "coverage-html": "nyc report --reporter=html",
+      "codecov": "nyc report --reporter=lcov && codecov"
+    }
+  }

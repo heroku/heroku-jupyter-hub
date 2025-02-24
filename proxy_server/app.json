@@ -1,0 +1,4 @@
+{
+    "name": "jupyterhub-proxy-server",
+    "stack": "container"
+}
