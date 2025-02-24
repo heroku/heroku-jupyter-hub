@@ -1,36 +1,32 @@
-FROM python:3.10-slim
+FROM node:lts-alpine3.18
 
-# Install Node.js and nginx
-RUN apt-get update && \
-    apt-get install -y \
-    nodejs \
-    npm \
-    nginx \
-    && npm install -g configurable-http-proxy \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+# Set labels based on the OCI
+LABEL org.opencontainers.image.authors="Jupyter Project <jupyter@googlegroups.com>"
+LABEL org.opencontainers.image.source="https://github.com/jupyterhub/configurable-http-proxy"
+LABEL org.opencontainers.image.url="https://github.com/jupyterhub/configurable-http-proxy/blob/HEAD/Dockerfile"
 
-# Copy application files
-WORKDIR /app
-COPY . .
+# Install nginx and debugging tools
+RUN apk upgrade --no-cache && \
+    apk add --no-cache \
+    curl \
+    jq \
+    nginx
+
+# Set up configurable-http-proxy
+RUN mkdir -p /srv/configurable-http-proxy
+COPY . /srv/configurable-http-proxy/
+WORKDIR /srv/configurable-http-proxy
+
+RUN npm install -g configurable-http-proxy
 
 # Copy nginx configuration
 COPY nginx.conf /etc/nginx/nginx.conf
 
-# Make start script executable
-RUN chmod +x start_proxy
+# Switch to non-root user
+USER 65534
 
-# Create nginx runtime directories
-RUN mkdir -p /var/log/nginx /var/run/nginx && \
-    chown -R jovyan:jovyan /var/log/nginx /var/run/nginx /var/lib/nginx /etc/nginx
+# Put configurable-http-proxy on path
+ENV PATH=/srv/configurable-http-proxy/bin:$PATH
 
-# Use non-root user
-RUN useradd -m -d /home/jovyan jovyan
-RUN chown -R jovyan:jovyan /app
-USER jovyan
-
-# Expose the port
-EXPOSE $PORT
-
-# Start both nginx and configurable-http-proxy
-CMD ["./start_proxy"]
+# Start command
+ENTRYPOINT ["/srv/configurable-http-proxy/start_proxy"]
