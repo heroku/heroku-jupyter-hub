@@ -1,36 +1,32 @@
-FROM node:lts-alpine3.18
-# ref: https://hub.docker.com/_/node?tab=tags&name=lts-alpine
+FROM python:3.10-slim
 
-# Set labels based on the Open Containers Initiative (OCI):
-# https://github.com/opencontainers/image-spec/blob/main/annotations.md#pre-defined-annotation-keys
-#
-LABEL org.opencontainers.image.authors="Jupyter Project <jupyter@googlegroups.com>"
-LABEL org.opencontainers.image.source="https://github.com/jupyterhub/configurable-http-proxy"
-LABEL org.opencontainers.image.url="https://github.com/jupyterhub/configurable-http-proxy/blob/HEAD/Dockerfile"
+# Install Node.js and nginx
+RUN apt-get update && \
+    apt-get install -y \
+    nodejs \
+    npm \
+    nginx \
+    && npm install -g configurable-http-proxy \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-# Add tools useful for debugging and update packages to patch known
-# vulnerabilities if needed.
-RUN apk upgrade --no-cache \
- && apk add --no-cache \
-        curl \
-        jq
+# Copy application files
+WORKDIR /app
+COPY . .
 
-# Copy relevant (see .dockerignore)
-RUN mkdir -p /srv/configurable-http-proxy
-COPY . /srv/configurable-http-proxy/
-WORKDIR /srv/configurable-http-proxy
+# Copy nginx configuration
+COPY nginx.conf /etc/nginx/nginx.conf
 
-# Install dependencies globally
-RUN npm install -g pg configurable-http-proxy \
-    && npm cache clean --force
-
-# Ensure start script is executable
+# Make start script executable
 RUN chmod +x start_proxy
 
-# Switch to non-root user
-USER node
+# Use non-root user
+RUN useradd -m -d /home/jovyan jovyan
+RUN chown -R jovyan:jovyan /app
+USER jovyan
 
-# Expose single port for both proxy and API
-EXPOSE ${PORT}
+# Expose the port
+EXPOSE $PORT
 
-ENTRYPOINT ["./start_proxy"]
+# Start both nginx and configurable-http-proxy
+CMD ["./start_proxy"]

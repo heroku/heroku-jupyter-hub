@@ -9,16 +9,19 @@ if [ -z "$CONFIGPROXY_AUTH_TOKEN" ]; then
     exit 1
 fi
 
-# Start configurable-http-proxy with both proxy and API on same port
+# Start configurable-http-proxy in the background
 configurable-http-proxy \
-    --port $PORT \
-    --api-port $PORT \
-    --api-prefix /api \
-    --no-include-prefix \
+    --port 8000 \
+    --api-port 8001 \
     --auth-token "$CONFIGPROXY_AUTH_TOKEN" \
-    --default-target http://127.0.0.1:$PORT \
-    --error-target http://127.0.0.1:$PORT/hub/error \
-    --log-level debug \
-    --insecure  # Add this if needed for testing
+    --default-target http://127.0.0.1:8000 \
+    --error-target http://127.0.0.1:8000/hub/error \
+    --log-level debug &
+
+# Replace PORT in nginx config
+sed -i "s/\$PORT/$PORT/g" /etc/nginx/nginx.conf
+
+# Start nginx in the foreground
+nginx
 
 chmod +x start_proxy
