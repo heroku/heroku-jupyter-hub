@@ -24,6 +24,8 @@ configurable-http-proxy --help
 # Start configurable-http-proxy in the background
 echo "Starting configurable-http-proxy..."
 configurable-http-proxy \
+    --ip 0.0.0.0 \
+    --api-ip 0.0.0.0 \
     --port 8000 \
     --api-port 8001 \
     --default-target http://127.0.0.1:8000 \
