@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -x  # Print each command before executing
+
 # Get the port from Heroku
 PORT=${PORT:-8000}
 echo "Using PORT: $PORT"
@@ -10,6 +12,14 @@ if [ -z "$CONFIGPROXY_AUTH_TOKEN" ]; then
     exit 1
 fi
 echo "Auth token is set"
+
+# Print configurable-http-proxy version
+echo "CHP version:"
+configurable-http-proxy --version
+
+# Print help to see available options
+echo "CHP help:"
+configurable-http-proxy --help
 
 # Start configurable-http-proxy in the background
 echo "Starting configurable-http-proxy..."
