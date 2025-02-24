@@ -1,62 +1,27 @@
 # Copyright (c) Jupyter Development Team.
 # Distributed under the terms of the Modified BSD License.
-# These args may not be necessary
-ARG JUPYTERHUB_ADMIN
-ARG DOCKER_NETWORK_NAME
-ARG DOCKER_NOTEBOOK_IMAGE
-ARG DOCKER_NOTEBOOK_DIR
 
-# Stage 1: Build dependencies
-FROM python:3.10-slim as builder
-
-# Install build dependencies
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-    gcc \
-    libc6-dev \
-    && rm -rf /var/lib/apt/lists/*
-
-# Install Python dependencies
-COPY requirements.txt /tmp/
-RUN pip install --user -r /tmp/requirements.txt
-
-# Stage 2: Final image
-FROM python:3.10-slim
-
-# Copy only the installed packages from builder
-COPY --from=builder /root/.local /root/.local
-ENV PATH=/root/.local/bin:$PATH
-
-# Install runtime dependencies
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-    docker.io \
-    && rm -rf /var/lib/apt/lists/*
-
-# Create jovyan user first
-RUN useradd -m -s /bin/bash -N -u 1000 jovyan
-
-# Create necessary directories and set permissions
-RUN mkdir -p /srv/jupyterhub /etc/jupyterhub && \
-    chown -R jovyan:users /srv/jupyterhub /etc/jupyterhub
-
-# Set working directory
-WORKDIR /srv/jupyterhub
+FROM quay.io/jupyterhub/jupyterhub
 
 # Copy application files
-COPY . .
+COPY start_hub jupyterhub_config.py create_proxy.py heroku_tools.py /srv/jupyterhub/
+COPY proxy_server/ /srv/jupyterhub/proxy_server
 
-# Set permissions for copied files
-RUN chown -R jovyan:users /srv/jupyterhub
+# Install git and other dependencies
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    git \
+    && rm -rf /var/lib/apt/lists/*
 
-# Switch to jovyan user
-USER jovyan
+# Install Python packages
+RUN python3 -m pip install --no-cache-dir --upgrade pip && \
+    python3 -m pip install --no-cache-dir \
+    dockerspawner \
+    jupyterhub-nativeauthenticator \
+    psycopg2-binary
 
 # Make start script executable
-RUN chmod +x start_hub
+RUN chmod +x /srv/jupyterhub/start_hub
 
-# Expose port
-EXPOSE $PORT
-
-# Start the service
-CMD ["./start_hub"]
+# Start command
+CMD ["sh", "-c", "jupyterhub", "-f", "/srv/jupyterhub/jupyterhub_config.py", "--port=${PORT}"]
