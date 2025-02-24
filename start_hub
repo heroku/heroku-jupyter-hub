@@ -4,25 +4,33 @@
 # terminal interface a little prettier:
 export PS1='\[\033[01;34m\]\w\[\033[00m\]\$'
 
-echo "Archiving proxy server files for proxy build blob..."
-export PROXY_BLOB='proxy_server/proxy_server_app.tar.gz'
-tar -czf $PROXY_BLOB proxy_server/*
-echo "Blob created"
-
 echo "Checking proxy server..."
-if ! heroku apps:info -a "$PROXY_NAME" &>/dev/null; then
-    echo "Creating proxy server app..."
-    heroku create "$PROXY_NAME"
-fi
+python3 - << EOF
+import os
+from heroku_tools import create_heroku_app, set_config_vars
 
-echo "Setting proxy server config vars..."
-heroku config:set \
-    APP_NAME="$PROXY_NAME" \
-    HUB_APP_NAME="$APP_NAME" \
-    HUB_WEB_URL="$WEB_URL" \
-    PROXY_WEB_URL="https://$PROXY_NAME.herokuapp.com/" \
-    CONFIGPROXY_AUTH_TOKEN="$CONFIGPROXY_AUTH_TOKEN" \
-    -a "$PROXY_NAME"
+proxy_name = os.environ.get('PROXY_NAME')
+app_name = os.environ.get('APP_NAME')
+web_url = os.environ.get('WEB_URL')
+proxy_web_url = f"https://{proxy_name}.herokuapp.com/"
+auth_token = os.environ.get('CONFIGPROXY_AUTH_TOKEN')
+
+# Create or update proxy app
+proxy_app = create_heroku_app(app_name=proxy_name)
+if proxy_app:
+    # Set config vars
+    config_vars = {
+        'APP_NAME': proxy_name,
+        'HUB_APP_NAME': app_name,
+        'HUB_WEB_URL': web_url,
+        'PROXY_WEB_URL': proxy_web_url,
+        'CONFIGPROXY_AUTH_TOKEN': auth_token
+    }
+    set_config_vars(proxy_name, config_vars)
+    print("Proxy server configuration updated")
+else:
+    print("Failed to configure proxy server")
+EOF
 
 echo "Starting Jupyterhub..."
 exec jupyterhub --debug
