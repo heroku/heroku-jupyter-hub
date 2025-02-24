@@ -26,7 +26,6 @@ echo "Starting configurable-http-proxy..."
 configurable-http-proxy \
     --port 8000 \
     --api-port 8001 \
-    --auth-token "$CONFIGPROXY_AUTH_TOKEN" \
     --default-target http://127.0.0.1:8000 \
     --error-target http://127.0.0.1:8000/hub/error \
     --api-path /api \
