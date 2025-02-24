@@ -20,6 +20,10 @@ COPY nginx.conf /etc/nginx/nginx.conf
 # Make start script executable
 RUN chmod +x start_proxy
 
+# Create nginx runtime directories
+RUN mkdir -p /var/log/nginx /var/run/nginx && \
+    chown -R jovyan:jovyan /var/log/nginx /var/run/nginx /var/lib/nginx /etc/nginx
+
 # Use non-root user
 RUN useradd -m -d /home/jovyan jovyan
 RUN chown -R jovyan:jovyan /app

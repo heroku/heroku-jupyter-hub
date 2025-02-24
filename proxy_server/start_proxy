@@ -2,14 +2,17 @@
 
 # Get the port from Heroku
 PORT=${PORT:-8000}
+echo "Using PORT: $PORT"
 
 # Ensure auth token is set
 if [ -z "$CONFIGPROXY_AUTH_TOKEN" ]; then
     echo "Error: CONFIGPROXY_AUTH_TOKEN must be set"
     exit 1
 fi
+echo "Auth token is set"
 
 # Start configurable-http-proxy in the background
+echo "Starting configurable-http-proxy..."
 configurable-http-proxy \
     --port 8000 \
     --api-port 8001 \
@@ -17,11 +20,24 @@ configurable-http-proxy \
     --default-target http://127.0.0.1:8000 \
     --error-target http://127.0.0.1:8000/hub/error \
     --log-level debug &
+PROXY_PID=$!
+echo "Configurable-http-proxy started with PID: $PROXY_PID"
+
+# Wait a moment for the proxy to start
+sleep 2
+
+# Check if proxy is running
+if ! kill -0 $PROXY_PID 2>/dev/null; then
+    echo "Error: configurable-http-proxy failed to start"
+    exit 1
+fi
 
 # Replace PORT in nginx config
+echo "Configuring nginx..."
 sed -i "s/\$PORT/$PORT/g" /etc/nginx/nginx.conf
 
 # Start nginx in the foreground
-nginx
+echo "Starting nginx..."
+nginx -g 'daemon off;'
 
 chmod +x start_proxy
