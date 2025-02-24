@@ -28,7 +28,6 @@ configurable-http-proxy \
     --api-port 8001 \
     --default-target http://127.0.0.1:8000 \
     --error-target http://127.0.0.1:8000/hub/error \
-    --api-path /api \
     --log-level debug &
 PROXY_PID=$!
 echo "Configurable-http-proxy started with PID: $PROXY_PID"
