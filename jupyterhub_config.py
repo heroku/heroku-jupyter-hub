@@ -76,10 +76,11 @@ if admin:
 # Config to run proxy seperately from the hub
 c.JupyterHub.cleanup_servers = False  # Don't cleanup servers since proxy is separate
 c.ConfigurableHTTPProxy.should_start = False  # Don't start the proxy since it's separate
-c.ConfigurableHTTPProxy.api_url = f"{os.environ.get('PROXY_WEB_URL')}api"  # Note: no port needed, using path-based routing
+c.ConfigurableHTTPProxy.api_url = f"{os.environ.get('PROXY_WEB_URL').rstrip('/')}/api"  # Clean URL, path-based routing
 c.ConfigurableHTTPProxy.auth_token = os.environ.get('CONFIGPROXY_AUTH_TOKEN')
 
 # Ensure these environment variables are required
-for env_var in ['PORT', 'PROXY_WEB_URL', 'CONFIGPROXY_AUTH_TOKEN']:
-    if not os.environ.get(env_var):
-        raise ValueError(f'Required environment variable {env_var} is not set')
+required_env_vars = ['PORT', 'PROXY_WEB_URL', 'CONFIGPROXY_AUTH_TOKEN']
+missing_vars = [var for var in required_env_vars if not os.environ.get(var)]
+if missing_vars:
+    raise ValueError(f'Required environment variables not set: {", ".join(missing_vars)}')

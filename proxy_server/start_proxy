@@ -3,12 +3,19 @@
 # Get the port from Heroku
 PORT=${PORT:-8000}
 
+# Ensure auth token is set
+if [ -z "$CONFIGPROXY_AUTH_TOKEN" ]; then
+    echo "Error: CONFIGPROXY_AUTH_TOKEN must be set"
+    exit 1
+fi
+
 # Start configurable-http-proxy with both proxy and API on same port
 configurable-http-proxy \
     --port $PORT \
     --api-port $PORT \
     --api-prefix /api \
     --no-include-prefix \
+    --auth-token "$CONFIGPROXY_AUTH_TOKEN" \
     --default-target http://127.0.0.1:$PORT \
     --error-target http://127.0.0.1:$PORT/hub/error \
     --log-level debug
