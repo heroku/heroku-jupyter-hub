@@ -17,16 +17,32 @@ echo "Connecting to database"
 python3 connect_db.py
 if [ $? -ne 0 ]; then
     echo "PROXY_PORT value not found."
-else 
-    read PROXY_PORT < proxy_port.txt
+    exit 1
+else
     export PROXY_PORT=$(cat proxy_port.txt)
     echo "PROXY_PORT = $PROXY_PORT"
 fi
 
-echo "Sleeping to give proxy app time to start up"
-sleep 3 
+echo "Waiting for proxy app to be ready..."
+# More robust wait mechanism with timeout
+max_attempts=30
+attempt=1
+while [ $attempt -le $max_attempts ]; do
+    if [ -z "$PROXY_WEB_URL" ]; then
+        echo "Waiting for PROXY_WEB_URL to be set (attempt $attempt/$max_attempts)..."
+        sleep 2
+        attempt=$((attempt + 1))
+    else
+        echo "PROXY_WEB_URL is set to: $PROXY_WEB_URL"
+        break
+    fi
+done
 
-echo " Proxy web url: $PROXY_WEB_URL"
+if [ -z "$PROXY_WEB_URL" ]; then
+    echo "Error: PROXY_WEB_URL not set after waiting. Exiting."
+    exit 1
+fi
+
 echo "Starting Jupyterhub..."
 exec jupyterhub --ConfigurableHTTPProxy.api_url="${PROXY_WEB_URL}:${PROXY_PORT}" --debug
 #exec jupyterhub

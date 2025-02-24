@@ -20,21 +20,16 @@ RUN mkdir -p /srv/configurable-http-proxy
 COPY . /srv/configurable-http-proxy/
 WORKDIR /srv/configurable-http-proxy
 
-RUN npm install pg
-RUN npm install -g configurable-http-proxy
-# Install configurable-http-proxy according to package-lock.json (ci) without
-# devDepdendencies (--production), then uninstall npm which isn't needed.
-# RUN npm ci --production \
-# && npm uninstall -g npm
+# Install dependencies globally
+RUN npm install -g pg configurable-http-proxy \
+    && npm cache clean --force
 
-# Switch from the root user to the nobody user
-USER 65534
+# Switch to non-root user
+USER node
 
-# Expose the proxy for traffic to be proxied (8000) and the
-# REST API where it can be configured (8001)
-#EXPOSE 8000
-#EXPOSE 8001
+# Expose ports for proxy traffic (8000) and API (8001)
+EXPOSE 8000 8001
 
 # Put configurable-http-proxy on path for chp-docker-entrypoint
 ENV PATH=/srv/configurable-http-proxy/bin:$PATH
-ENTRYPOINT ["/srv/configurable-http-proxy/start_proxy"]
+ENTRYPOINT ["./start_proxy"]
