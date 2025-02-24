@@ -19,6 +19,7 @@ configurable-http-proxy \
     --auth-token "$CONFIGPROXY_AUTH_TOKEN" \
     --default-target http://127.0.0.1:8000 \
     --error-target http://127.0.0.1:8000/hub/error \
+    --api-path /api \
     --log-level debug &
 PROXY_PID=$!
 echo "Configurable-http-proxy started with PID: $PROXY_PID"
