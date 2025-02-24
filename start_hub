@@ -4,33 +4,5 @@
 # terminal interface a little prettier:
 export PS1='\[\033[01;34m\]\w\[\033[00m\]\$'
 
-echo "Checking proxy server..."
-python3 - << EOF
-import os
-from heroku_tools import create_heroku_app, set_config_vars
-
-proxy_name = os.environ.get('PROXY_NAME')
-app_name = os.environ.get('APP_NAME')
-web_url = os.environ.get('WEB_URL')
-proxy_web_url = f"https://{proxy_name}.herokuapp.com/"
-auth_token = os.environ.get('CONFIGPROXY_AUTH_TOKEN')
-
-# Create or update proxy app
-proxy_app = create_heroku_app(app_name=proxy_name)
-if proxy_app:
-    # Set config vars
-    config_vars = {
-        'APP_NAME': proxy_name,
-        'HUB_APP_NAME': app_name,
-        'HUB_WEB_URL': web_url,
-        'PROXY_WEB_URL': proxy_web_url,
-        'CONFIGPROXY_AUTH_TOKEN': auth_token
-    }
-    set_config_vars(proxy_name, config_vars)
-    print("Proxy server configuration updated")
-else:
-    print("Failed to configure proxy server")
-EOF
-
 echo "Starting Jupyterhub..."
 exec jupyterhub --debug

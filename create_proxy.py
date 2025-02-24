@@ -10,7 +10,6 @@ from heroku_tools import (
     set_config_vars,
     create_blob_source,
     create_build,
-
     )
 
 
@@ -18,7 +17,7 @@ HUB_APP_NAME = os.getenv("APP_NAME")
 HEROKU_AUTH_TOKEN = os.getenv("HEROKU_AUTH_TOKEN")
 HUB_PORT = os.getenv("PORT")
 PROXY_APP_NAME = os.getenv("PROXY_NAME")
-PROXY_AUTH_TOKEN = os.getenv("PROXY_AUTH_TOKEN")
+PROXY_AUTH_TOKEN = os.getenv("CONFIGPROXY_AUTH_TOKEN")
 PROXY_BLOB = os.getenv("PROXY_BLOB")
 DATABASE_URL = os.getenv("DATABASE_URL")
 DATABASE_GLOBAL_NAME = os.getenv("DATABASE_GLOBAL_NAME")
@@ -34,15 +33,12 @@ if __name__ == "__main__":
         print(f"{item}: {hub_info[item]}")
 
     print("\n\nGetting proxy app info...")
-    # TODO check if app exists. If it exists, check if user owns app.
     proxy_info = create_heroku_app(app_name=PROXY_APP_NAME)
-
-    # proxy_info = get_app_info(app_name=PROXY_APP_NAME)
     print("PROXY INFO: ")
     for item in proxy_info:
         print(f"{item}: {proxy_info[item]}")
 
-    # Check if proxy has prostgres add-on and attach if not
+    # Check if proxy has postgres add-on and attach if not
     print("\n\nChecking for Proxy App database add-on...")
     database_info = get_addon_info(PROXY_APP_NAME, DATABASE_GLOBAL_NAME)
     if database_info is None:
@@ -57,29 +53,33 @@ if __name__ == "__main__":
     for each in database_info:
         print(f"{each}: {database_info[each]}")
 
-    # Set config variable for proxy_url in hub app
-    print("Saving proxy info to hub...")
-    set_config_vars(app_name=HUB_APP_NAME, config_vars={"PROXY_WEB_URL": proxy_info["web_url"]})
+    # Set all necessary config vars for both apps
+    print("\n\nSetting config variables...")
 
-    # Set config variables to hub address
-    print("Saving app info to proxy app...")
+    # Set proxy URL in hub app
+    hub_config_vars = {
+        "PROXY_WEB_URL": proxy_info["web_url"]
+    }
+    set_config_vars(app_name=HUB_APP_NAME, config_vars=hub_config_vars)
+
+    # Set all necessary config vars for proxy app
     proxy_config_vars = {
-                    "HUB_APP_NAME": HUB_APP_NAME,
-                    "HUB_WEB_URL": hub_info["web_url"],
-                    "HUB_PORT": HUB_PORT,
-                    "APP_NAME": PROXY_APP_NAME,
-                    "PROXY_WEB_URL": proxy_info["web_url"],
-                    "CONFIGPROXY_AUTH_TOKEN": PROXY_AUTH_TOKEN,
-                    "HEROKU_AUTH_TOKEN": HEROKU_AUTH_TOKEN,
-                    }
+        "APP_NAME": PROXY_APP_NAME,
+        "HUB_APP_NAME": HUB_APP_NAME,
+        "HUB_WEB_URL": hub_info["web_url"],
+        "HUB_PORT": HUB_PORT,
+        "PROXY_WEB_URL": proxy_info["web_url"],
+        "CONFIGPROXY_AUTH_TOKEN": PROXY_AUTH_TOKEN,
+        "HEROKU_AUTH_TOKEN": HEROKU_AUTH_TOKEN,
+    }
     set_config_vars(app_name=PROXY_APP_NAME, config_vars=proxy_config_vars)
 
     # Push proxy app blob to heroku source url
-    print("Creating source for proxy app blob...")
+    print("\n\nCreating source for proxy app blob...")
     blob_get_url = create_blob_source(app_name=PROXY_APP_NAME, blob_path=PROXY_BLOB)
 
     # Create build for proxy server app
-    print("Attempting to create proxy server build...")
+    print("\n\nAttempting to create proxy server build...")
     proxy_build = create_build(app_name=PROXY_APP_NAME, source_blob={"source_blob": {"url": blob_get_url}})
     print("Proxy server is running...")
 
