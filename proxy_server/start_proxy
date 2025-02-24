@@ -48,5 +48,5 @@ sed -i "s/\$PORT/$PORT/g" /etc/nginx/nginx.conf
 # Start nginx in the foreground
 echo "Starting nginx..."
 nginx -g 'daemon off;'
+# chmod +x start_proxy
 
-chmod +x start_proxy
