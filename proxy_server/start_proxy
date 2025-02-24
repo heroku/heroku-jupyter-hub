@@ -1,17 +1,16 @@
-#!/usr/bin/env sh 
+#!/bin/sh
 
-echo "Adding proxy port to shared database..."
-node connect_db.js
-echo "Database updated"
+# Get the port from Heroku
+PORT=${PORT:-8000}
 
-# Remove 'https://'' from urls
-CLEAN_PROXY_URL="${PROXY_WEB_URL#https://}"
-CLEAN_HUB_URL="${HUB_WEB_URL#https://}"
+# Start configurable-http-proxy with both proxy and API on same port
+configurable-http-proxy \
+    --port $PORT \
+    --api-port $PORT \
+    --api-prefix /api \
+    --no-include-prefix \
+    --default-target http://127.0.0.1:$PORT \
+    --error-target http://127.0.0.1:$PORT/hub/error \
+    --log-level debug
 
-# Remove trailing '/' from urls
-CLEAN_PROXY_URL="${CLEAN_PROXY_URL%/}"
-CLEAN_HUB_URL="${CLEAN_HUB_URL%/}"
-
-echo "PROXY WEB URL CLEAN: $CLEAN_PROXY_URL"
-echo "Starting proxy server..."
-exec configurable-http-proxy --ip=0.0.0.0 --port=$PORT --api-ip=0.0.0.0 --api-port=$PORT --default-target=${CLEAN_HUB_URL}:${HUB_PORT} --error-target=${CLEAN_HUB_URL}:${HUB_PORT}/hub/error --log-level=debug
+chmod +x start_proxy

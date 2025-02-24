@@ -24,12 +24,13 @@ WORKDIR /srv/configurable-http-proxy
 RUN npm install -g pg configurable-http-proxy \
     && npm cache clean --force
 
+# Ensure start script is executable
+RUN chmod +x start_proxy
+
 # Switch to non-root user
 USER node
 
-# Expose ports for proxy traffic (8000) and API (8001)
-EXPOSE 8000 8001
+# Expose single port for both proxy and API
+EXPOSE ${PORT}
 
-# Put configurable-http-proxy on path for chp-docker-entrypoint
-ENV PATH=/srv/configurable-http-proxy/bin:$PATH
 ENTRYPOINT ["./start_proxy"]
