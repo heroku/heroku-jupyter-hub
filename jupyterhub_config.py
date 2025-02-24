@@ -76,9 +76,10 @@ if admin:
 # Proxy configuration
 c.JupyterHub.cleanup_servers = False
 c.ConfigurableHTTPProxy.should_start = False  # Don't start the proxy
-c.ConfigurableHTTPProxy.api_url = f"{os.environ.get('PROXY_WEB_URL').rstrip('/')}/api"
+# Remove /api from the URL since JupyterHub adds it
+proxy_base_url = os.environ.get('PROXY_WEB_URL').rstrip('/')
+c.ConfigurableHTTPProxy.api_url = proxy_base_url
 c.ConfigurableHTTPProxy.auth_token = os.environ.get('CONFIGPROXY_AUTH_TOKEN')
-c.ConfigurableHTTPProxy.public_url = os.environ.get('PROXY_WEB_URL').rstrip('/')
 
 # Ensure these environment variables are required
 required_env_vars = ['PORT', 'PROXY_WEB_URL', 'CONFIGPROXY_AUTH_TOKEN']
