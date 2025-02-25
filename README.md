@@ -29,7 +29,4 @@ To create a new app, run:
 
 ## Python version
 
-If you want to use a different Python version, you should set it in the `.python-version` file, for example:
-```
-3.11
-```
+If you want to use a different Python version, you should set it in the `.python-version` file.
