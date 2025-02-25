@@ -68,6 +68,10 @@ admin = os.environ.get("JUPYTERHUB_ADMIN")
 if admin:
     c.Authenticator.admin_users = [admin]
 
+
+c.JupyterHub.api_tokens = {
+    os.environ.get("ADMIN_TOKEN"): admin
+}
 #c.JupyterHub.cleanup_servers = True
 #c.ConfigurableHTTPProxy.should_start = True
 #c.ConfigurableHTTPProxy.api_url = f'http://localhost:{int(os.environ.get("PORT"))}'
