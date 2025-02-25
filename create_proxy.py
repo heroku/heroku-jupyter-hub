@@ -57,8 +57,9 @@ if __name__ == "__main__":
     print("\n\nSetting config variables...")
 
     # Set proxy URL in hub app
+# Set proxy URL in hub app with correct API path
     hub_config_vars = {
-        "PROXY_WEB_URL": proxy_info["web_url"]
+        "PROXY_WEB_URL": f"{proxy_info['web_url'].rstrip('/')}/api"
     }
     set_config_vars(app_name=HUB_APP_NAME, config_vars=hub_config_vars)
 

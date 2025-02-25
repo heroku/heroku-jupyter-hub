@@ -78,8 +78,7 @@ c.JupyterHub.cleanup_servers = False
 c.ConfigurableHTTPProxy.should_start = False  # Don't start the proxy
 
 # Clean up the proxy URL to avoid double /api
-proxy_base_url = os.environ.get('PROXY_WEB_URL', '').rstrip('/')
-c.ConfigurableHTTPProxy.api_url = proxy_base_url  # Remove /api since nginx adds it
+c.ConfigurableHTTPProxy.api_url = os.environ.get('PROXY_WEB_URL', '')
 c.ConfigurableHTTPProxy.auth_token = os.environ.get('CONFIGPROXY_AUTH_TOKEN')
 
 # Debug logging for proxy communication
